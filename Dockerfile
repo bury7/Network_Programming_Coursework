@@ -1,4 +1,4 @@
-FROM python:3.15-slim AS builder
+FROM python:3.15-slim-trixie AS builder
 
 COPY --from=ghcr.io/astral-sh/uv:0.13.10 /uv /bin/uv
 
@@ -15,7 +15,7 @@ COPY src ./src
 RUN uv sync --locked --no-dev --no-cache
 
 
-FROM python:3.15-slim
+FROM python:3.15-slim-trixie
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
@@ -25,7 +25,12 @@ WORKDIR /app
 
 COPY --from=builder /app /app
 
-RUN useradd --system appuser && mkdir instance && chown appuser instance
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && rm -rf /var/lib/apt/lists/* \
+    && useradd --system appuser \
+    && mkdir instance \
+    && chown appuser instance
 USER appuser
 
 EXPOSE 5000

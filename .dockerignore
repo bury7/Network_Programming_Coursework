@@ -1,4 +1,7 @@
 *
-!requirements.txt
+!pyproject.toml
+!uv.lock
+!.python-version
+!README.md
 !src/
 **/__pycache__

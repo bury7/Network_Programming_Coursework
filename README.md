@@ -33,13 +33,12 @@ A Flask web server where every request needs HTTP Basic authentication. Users an
 
 `/currency` answers in JSON or XML when the request has `Content-Type: application/json` or `application/xml`, and in plain text (`USD - 45,3541`) otherwise. Products are JSON objects with `name`, `price` and `color`, for example `{"name": "T-shirt", "price": 499.99, "color": "black"}`. Errors come back as JSON, for example `{"error": "Item 42 not found"}`.
 
-| Path                                                               | What it is                                                    |
-|--------------------------------------------------------------------|---------------------------------------------------------------|
-| [src/coursework/](src/coursework)                                  | Flask app: Basic Auth, database, currency and items endpoints |
-| [tests/](tests)                                                    | `pytest` tests, including unit tests for `parse_item`         |
-| [Dockerfile](Dockerfile)                                           | Image that runs the app with gunicorn on port 5000            |
-| [requirements.txt](requirements.txt)                               | Pinned runtime dependencies for the image                     |
-| [.github/workflows/sample-ci.yml](.github/workflows/sample-ci.yml) | CI: checks and tests, then build and push to Docker Hub       |
+| Path                                                               | What it is                                                     |
+|--------------------------------------------------------------------|----------------------------------------------------------------|
+| [src/coursework/](src/coursework)                                  | Flask app: Basic Auth, database, currency and items endpoints  |
+| [tests/](tests)                                                    | `pytest` tests, including unit tests for `parse_item`          |
+| [Dockerfile](Dockerfile)                                           | Image built with uv from `uv.lock`, runs gunicorn on port 5000 |
+| [.github/workflows/sample-ci.yml](.github/workflows/sample-ci.yml) | CI: checks and tests, then build and push to Docker Hub        |
 
 ## How to run
 
@@ -79,7 +78,7 @@ docker run -p 5000:5000 -e ADMIN_USERNAME=admin -e ADMIN_PASSWORD=password cours
 Data lives in `/app/instance` inside the container and is lost when the container is removed. Add `-v coursework-data:/app/instance` to keep it.
 
 ### CI and Docker Hub
-The workflow runs on every pull request and every push to `main`. It checks formatting, lint and types, runs the tests and checks that `requirements.txt` matches `uv.lock`. On a push to `main` it then builds the image and pushes it to Docker Hub as [`bury7/network-programming-coursework`](https://hub.docker.com/r/bury7/network-programming-coursework) with the `latest` tag and the commit SHA as tags.
+The workflow runs on every pull request and every push to `main`. It checks formatting, lint and types, and runs the tests. On a push to `main` it then builds the image and pushes it to Docker Hub as [`bury7/network-programming-coursework`](https://hub.docker.com/r/bury7/network-programming-coursework) with the `latest` tag and the commit SHA as tags.
 
 One-time setup:
 
@@ -88,12 +87,6 @@ One-time setup:
    - `DOCKERHUB_USERNAME` — your Docker Hub username;
    - `DOCKERHUB_TOKEN` — the token from step 1.
 3. Push to `main` and watch the run in the **Actions** tab.
-
-After you change dependencies, regenerate `requirements.txt`:
-
-```bash
-uv export --locked --no-dev --no-hashes --no-emit-project --output-file requirements.txt
-```
 
 ### Run the published image
 ```bash

@@ -32,11 +32,6 @@ jobs:
       - name: Run tests
         run: uv run pytest
 
-      - name: Check requirements.txt matches uv.lock
-        run: |
-          uv export --locked --no-dev --no-hashes --no-emit-project --output-file requirements.txt
-          git diff --exit-code requirements.txt
-
   build-and-push:
     needs: test
     if: github.event_name == 'push'
